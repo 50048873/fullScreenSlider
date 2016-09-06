@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html class="fullScreenSlider">
+<head>
+	<meta charset="UTF-8" />
+	<title>多终端单页全屏滚动</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+	<!-- 让应用可以在apple上全屏 -->
+	<meta name='apple-touch-fullscreen' content="yes" />
+	<link rel="apple-touch-icon" href="img/favicon.png">
+	<link rel="icon" type="image/png" href="img/favicon.png">
+	<link rel="stylesheet" type="text/css" href="css/index.css" />
+</head>
+<body>
+	<nav>
+		<span class="active"></span>
+		<span></span>
+		<span></span>
+		<span></span>
+	</nav>
+	<div class="page-container">
+		<section class="page animated">
+			<h1>Serenditity</h1>
+			<p>Art party readymade beard labore cosby sweater cuipa. Art part whatever incididunt, scenester umami potaroid tofu.</p>
+		</section>
+		<section class="page animated">
+			<h1>Happiness</h1>
+			<p>Art party readymade beard labore cosby sweater cuipa. Art part whatever incididunt, scenester umami potaroid tofu.</p>
+		</section>
+		<section class="page animated">
+			<h1>Tranquillity</h1>
+			<p>Art party readymade beard labore cosby sweater cuipa. Art part whatever incididunt, scenester umami potaroid tofu.</p>
+		</section>
+		<section class="page animated">
+			<h1>Positivity</h1>
+			<p>Art party readymade beard labore cosby sweater cuipa. Art part whatever incididunt, scenester umami potaroid tofu.</p>
+		</section>
+	</div>
+
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="bower_components/jquery-touchswipe/jquery.touchSwipe.min.js"></script>
+	<script src="js/fullScreenSlider.js"></script>
+	<script>
+		$('.page-container').fullScreenSlider({ 
+			//loop: true
+		});
+	</script>
+</body>
+</html>
