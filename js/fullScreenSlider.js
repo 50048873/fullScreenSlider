@@ -2,7 +2,7 @@
 	/*
 		loop: false, 	//默认不循环滚动
 		tb: true,		//默认上下滑动
-		lr: false		//左右滑动（如果tb和lr都为true，则上下左右滑动）
+		lr: false		//左右滑动
 	*/
 	var defaults = { 
 		loop: false,
@@ -14,13 +14,20 @@
 		this.$container = $(container);
 		this.$pages = this.$container.find('.page');
 		this.len = this.$pages.length;
-		this.index = 0;
-		this.zIndex = 0;
 
 		this.opts = $.extend({}, defaults, options);
 
+		this.index = 0;
+		this.zIndex = 0;
+
+		
+		if (this.opts.tb && this.opts.lr) this.opts.tb = false;
 		this.init_zIndex();
 		this.slide();
+		if (!this.opts.loop) { 
+			this.reboundMonitor();
+		}
+		
 	};
 
 	FullScreenSlider.prototype.init_zIndex = function() { 
@@ -29,35 +36,48 @@
 		}
 	};
 
-	FullScreenSlider.prototype.slide = function() { 
-		var _this = this;
+	FullScreenSlider.prototype.isFirstElement = function(target) { 
+		var firstElement = this.$pages[0];
+		return firstElement == target ? true : firstElement == $(target).parent('.page')[0];
+	};
+
+	FullScreenSlider.prototype.isLastElement = function(target) { 
+		var lastElement = this.$pages[this.len - 1];
+		return lastElement == target ? true : lastElement == $(target).parent('.page')[0];
+	};
+
+	//滑动到下一页
+	FullScreenSlider.prototype.goTo = function(index, direction) { 
+		//1.如果不能循环时，且满足下面条件，则不执行2
+		if (!this.opts.loop) { 
+			if (this.isFirstElement(event.target) && (direction == 'down' || direction == 'right')) return;
+			if (this.isLastElement(event.target) && (direction == 'up' || direction == 'left')) return;
+		} 
 		
-		this.$container.swipe({ 
-			swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
-				if (direction == 'up') { 
-					_this.nextIndex(direction);
-					_this.goTo(_this.index, direction);
-				}
-				if (direction == 'down') { 
-					_this.nextIndex(direction);
-					_this.goTo(_this.index, direction);
-				}
-				if (direction == 'left') { 
-					_this.nextIndex(direction);
-					_this.goTo(_this.index, direction);
-				}
-				if (direction == 'right') { 
-					_this.nextIndex(direction);
-					_this.goTo(_this.index, direction);
-				}
-	        }
-		});
+		//2.根据索引滑动对应页面
+		var $targetPage = this.$pages.eq(index);
+		
+		if (this.opts.tb) { 
+			if (direction == 'up') { 
+				$targetPage.css('zIndex', this.zIndex++).addClass('slideInUp').siblings().removeClass('slideInUp slideInDown');
+			}
+			if (direction == 'down') { 
+				$targetPage.css('zIndex', this.zIndex++).addClass('slideInDown').siblings().removeClass('slideInUp slideInDown');
+			}
+		} else if (this.opts.lr) { 
+			if (direction == 'left') { 
+				$targetPage.css('zIndex', this.zIndex++).addClass('slideInRight').siblings().removeClass('slideInLeft slideInRight');
+			}
+			if (direction == 'right') { 
+				$targetPage.css('zIndex', this.zIndex++).addClass('slideInLeft').siblings().removeClass('slideInLeft slideInRight');
+			}
+		}
 	};
 
 	FullScreenSlider.prototype.nextIndex = function(direction) { 
 		if (direction == 'up' || direction == 'left') { 
 			this.index++;
-			if (this.index >= this.len) { 
+			if (this.index > this.len - 1) { 
 				this.opts.loop ? this.index = 0 : this.index = this.len - 1;
 			}
 		}
@@ -70,46 +90,69 @@
 		}
 	};
 
-	FullScreenSlider.prototype.goTo = function(index, direction) { 
-		if (!this.opts.loop) { 
-			if (direction == 'up' || direction == 'left') { 
-				if (this.$pages[this.len - 1] == event.target) return;
-			}
-			if (direction == 'down' || direction == 'right') { 
-				if (this.$pages[0] == event.target) return;
-			}
-		}
+	//注册滑动事件监听
+	FullScreenSlider.prototype.slide = function() { 
+		var _this = this;
 		
-		var $targetPage = this.$pages.eq(index);
+		this.$container.swipe({ 
+			swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
+				_this.nextIndex(direction);
+				_this.goTo(_this.index, direction);
+	        }
+		});
+	};
 
-		if (this.opts.tb && !this.opts.lr) { 
-			if (direction == 'up') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInUp').siblings().removeClass('slideInUp slideInDown');
+	//注册首尾页弹回事件监听
+	FullScreenSlider.prototype.reboundMonitor = function() { 
+		var _this = this;
+		addEventListener('touchstart', fingerStart, false);
+		addEventListener('touchmove', fingerMove, false);
+		addEventListener('touchend', fingerEnd, false);
+
+		//手指触摸
+		function fingerStart(e) { 
+			this.startPageX = e.touches[0].pageX;
+			this.startPageY = e.touches[0].pageY;
+		};
+
+		//手指触摸后移动
+		function fingerMove(e) {
+			//阻止android滑动时的默认行为，重要！
+			e.preventDefault(); 
+
+			//记录偏移量 = 移动位置座标 - 开始位置座标
+			this.offsetX = e.touches[0].pageX - this.startPageX;
+			this.offsetY = e.touches[0].pageY - this.startPageY;
+
+			if (_this.opts.lr) { 
+				if (_this.isFirstElement(e.target) && this.offsetX > 0 || _this.isLastElement(e.target) && this.offsetX < 0) { 
+					$(_this.$pages[_this.index]).removeClass('slideInUp slideInDown slideInLeft slideInRight').css({
+						'-webkit-transform': 'translate3d(' + (this.offsetX /= 2) + 'px, 0, 0)',
+						'transition': 'none'
+					});
+				}
 			}
-			if (direction == 'down') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInDown').siblings().removeClass('slideInUp slideInDown');
+
+			if (_this.opts.tb) { 
+				if (_this.isFirstElement(e.target) && this.offsetY > 0 || _this.isLastElement(e.target) && this.offsetY < 0) { 
+					$(_this.$pages[_this.index]).removeClass('slideInUp slideInDown slideInLeft slideInRight').css({
+						'-webkit-transform': 'translate3d(0, ' + (this.offsetY /= 2) + 'px, 0)',
+						'transition': 'none'
+					});
+				}
 			}
-		} else if (this.opts.lr && !this.opts.tb) { 
-			if (direction == 'left') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInRight').siblings().removeClass('slideInLeft slideInRight');
+			
+		};
+
+		//手指抬起
+		function fingerEnd(e) { 
+			if (_this.isFirstElement(e.target) && (this.offsetX > 0 || this.offsetY > 0) || _this.isLastElement(e.target) && (this.offsetX < 0 || this.offsetY < 0)) { 
+				$(_this.$pages[_this.index]).css({
+					'-webkit-transform': 'translate3d(0, 0, 0)',
+					'transition': 'transform 0.2s ease-out'
+				});
 			}
-			if (direction == 'right') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInLeft').siblings().removeClass('slideInLeft slideInRight');
-			}
-		} else if (this.opts.tb && this.opts.lr) { 
-			if (direction == 'up') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInUp').siblings().removeClass('slideInUp slideInDown slideInLeft slideInRight');
-			}
-			if (direction == 'down') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInDown').siblings().removeClass('slideInUp slideInDown slideInLeft slideInRight');
-			}
-			if (direction == 'left') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInRight').siblings().removeClass('slideInUp slideInDown slideInLeft slideInRight');
-			}
-			if (direction == 'right') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInLeft').siblings().removeClass('slideInUp slideInDown slideInLeft slideInRight');
-			}
-		} 
+		};
 	};
 
 	$.fn.fullScreenSlider = function(options) { 
