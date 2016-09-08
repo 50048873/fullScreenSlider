@@ -8,8 +8,8 @@
 	*/
 	var defaults = { 
 		loop: false,
-		tb: false,
-		lr: true
+		tb: true,
+		lr: false
 	};
 
 	function FullScreenSlider(container, options) { 
@@ -158,7 +158,7 @@
 					$(_this.$pages[_this.index]).removeClass('slideInUp slideInDown slideInLeft slideInRight').css({
 						'-webkit-transform': 'translate3d(' + (this.offsetX /= 2) + 'px, 0, 0)',
 						'transition': 'none'
-					});
+					}).siblings().css('opacity', '0');
 				}
 			}
 
@@ -167,7 +167,7 @@
 					$(_this.$pages[_this.index]).removeClass('slideInUp slideInDown slideInLeft slideInRight').css({
 						'-webkit-transform': 'translate3d(0, ' + (this.offsetY /= 2) + 'px, 0)',
 						'transition': 'none'
-					});
+					}).siblings().css('opacity', '0');
 				}
 			}
 		};
@@ -175,10 +175,14 @@
 		//手指抬起
 		var fingerEnd = function (e) { 
 			//if (_this.isFirstElement(e.target) && (this.offsetX > 0 || this.offsetY > 0) || _this.isLastElement(e.target) && (this.offsetX < 0 || this.offsetY < 0)) { 
-				$(_this.$pages[_this.index]).css({
+				var $activeEle = $(_this.$pages[_this.index]);
+				$activeEle.css({
 					'-webkit-transform': 'translate3d(0, 0, 0)',
 					'transition': 'transform 0.2s ease-out'
 				});
+				setTimeout(function() { 
+					$activeEle.siblings().css('opacity', '1');
+				}, 200);
 			//}
 		};
 
