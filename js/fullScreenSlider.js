@@ -30,17 +30,20 @@
 		
 	};
 
+	//初始化页面元素zIndex层级
 	FullScreenSlider.prototype.init_zIndex = function() { 
 		for (var i = this.len - 1; i >= 0; i--) { 
 			this.$pages.eq(i).css('zIndex', this.zIndex++);
 		}
 	};
 
+	//判断是否第一个元素
 	FullScreenSlider.prototype.isFirstElement = function(target) { 
 		var firstElement = this.$pages[0];
 		return firstElement == target ? true : firstElement == $(target).parent('.page')[0];
 	};
 
+	//判断是否最后一个元素
 	FullScreenSlider.prototype.isLastElement = function(target) { 
 		var lastElement = this.$pages[this.len - 1];
 		return lastElement == target ? true : lastElement == $(target).parent('.page')[0];
@@ -48,6 +51,8 @@
 
 	//滑动到下一页
 	FullScreenSlider.prototype.goTo = function(index, direction) { 
+		var _this = this;
+
 		//1.如果不能循环时，且满足下面条件，则不执行2
 		if (!this.opts.loop) { 
 			if (this.isFirstElement(event.target) && (direction == 'down' || direction == 'right')) return;
@@ -55,25 +60,28 @@
 		} 
 		
 		//2.根据索引滑动对应页面
-		var $targetPage = this.$pages.eq(index);
-		
+		var startSlide = function(add_class, remove_class) { 
+			_this.$pages.eq(index).css('zIndex', _this.zIndex++).addClass(add_class).siblings().removeClass(remove_class);
+		};
 		if (this.opts.tb) { 
 			if (direction == 'up') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInUp').siblings().removeClass('slideInUp slideInDown');
+				startSlide('slideInUp', 'slideInUp slideInDown');
 			}
 			if (direction == 'down') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInDown').siblings().removeClass('slideInUp slideInDown');
+				startSlide('slideInDown', 'slideInUp slideInDown');
 			}
-		} else if (this.opts.lr) { 
+		} 
+		if (this.opts.lr) { 
 			if (direction == 'left') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInRight').siblings().removeClass('slideInLeft slideInRight');
+				startSlide('slideInRight', 'slideInLeft slideInRight');
 			}
 			if (direction == 'right') { 
-				$targetPage.css('zIndex', this.zIndex++).addClass('slideInLeft').siblings().removeClass('slideInLeft slideInRight');
+				startSlide('slideInLeft', 'slideInLeft slideInRight');
 			}
 		}
 	};
 
+	//取得下一个滑动元素索引
 	FullScreenSlider.prototype.nextIndex = function(direction) { 
 		if (direction == 'up' || direction == 'left') { 
 			this.index++;
