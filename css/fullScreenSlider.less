@@ -8,8 +8,6 @@
 		nav { 
 			position: absolute;
 			z-index: 9999;
-			bottom: 2%;
-			width: 100%;
 			text-align: center;
 			span { 
 				display: inline-block;
@@ -17,11 +15,28 @@
 				height: 0.1rem;
 				background-color: black;
 				border-radius: 50%;
-				margin-right: 0.05rem;
-				margin-left: 0.05rem;
 			}
 			.active { 
 				background-color: white;
+			}
+		}
+		.horizontalDot { 
+			bottom: 2%;
+			width: 100%;
+			span { 
+				margin-right: 0.05rem;
+				margin-left: 0.05rem;
+			}
+		}
+		.verticalDot { 
+			right: 2%;
+		    height: 100%;
+		    writing-mode: tb-rl;
+		    -webkit-writing-mode: vertical-rl;      
+		    writing-mode: vertical-rl;
+		    span { 
+				margin-top: 0.05rem;
+				margin-bottom: 0.05rem;
 			}
 		}
 		.page-container { 
