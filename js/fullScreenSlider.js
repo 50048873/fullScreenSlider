@@ -134,7 +134,8 @@
 				_this.nextIndex(direction);
 				_this.goTo(_this.index, direction);
 				_this.setProgressDot();
-	        }
+	        },
+	        threshold: 10
 		});
 	};
 
