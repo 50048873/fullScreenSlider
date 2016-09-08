@@ -3,18 +3,19 @@
 ;(function($) { 
 	/*
 		loop: false, 	//默认不循环滚动
-		tb: true,		//默认上下滑动
-		lr: false		//左右滑动
+		tb: false,		//上下滑动
+		lr: true		//默认左右滑动
 	*/
 	var defaults = { 
 		loop: false,
-		tb: true,
-		lr: false
+		tb: false,
+		lr: true
 	};
 
 	function FullScreenSlider(container, options) { 
 		this.$container = $(container);
 		this.$pages = this.$container.find('.page');
+		this.$nav = this.$container.siblings('nav');
 		this.len = this.$pages.length;
 
 		this.opts = $.extend({}, defaults, options);
@@ -22,9 +23,9 @@
 		this.index = 0;
 		this.zIndex = 0;
 
-		if (this.opts.tb && this.opts.lr) this.opts.tb = false;
+		if (this.opts.tb && this.opts.lr) this.opts.lr = false;
 
-		//默认初始化页面元素zIndex层级
+		//默认初始化页面元素zIndex层级和dot位置
 		this.init_zIndex();
 
 		//默认监听滑动事件
@@ -36,10 +37,13 @@
 		}
 	};
 
-	//初始化页面元素zIndex层级
+	//初始化页面元素zIndex层级和dot位置
 	FullScreenSlider.prototype.init_zIndex = function() { 
 		for (var i = this.len - 1; i >= 0; i--) { 
 			this.$pages.eq(i).css('zIndex', this.zIndex++);
+		}
+		if (this.opts.tb) { 
+			this.$nav.addClass('verticalDot').removeClass('horizontalDot');
 		}
 	};
 
@@ -66,8 +70,8 @@
 		} 
 		
 		//2.根据索引滑动对应页面
-		var startSlide = function(add_class, remove_class) { 
-			_this.$pages.eq(index).css('zIndex', _this.zIndex++).addClass(add_class).siblings().removeClass(remove_class);
+		var startSlide = function(addClass, removeClass) { 
+			_this.$pages.eq(index).css('zIndex', _this.zIndex++).addClass(addClass).siblings().removeClass(removeClass);
 		};
 		if (this.opts.tb) { 
 			if (direction == 'up') { 
@@ -192,7 +196,7 @@
 	};
 
 	FullScreenSlider.prototype.setProgressDot = function() { 
-		var $dots = this.$container.siblings('nav').find('span');
+		var $dots = this.$nav.find('span');
 		$dots.eq(this.index).addClass('active').siblings().removeClass('active');
 	};
 
