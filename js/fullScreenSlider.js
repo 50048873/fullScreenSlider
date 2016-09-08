@@ -1,3 +1,5 @@
+'use strict';
+
 ;(function($) { 
 	/*
 		loop: false, 	//默认不循环滚动
@@ -6,8 +8,8 @@
 	*/
 	var defaults = { 
 		loop: false,
-		tb: true,
-		lr: false
+		tb: false,
+		lr: true
 	};
 
 	function FullScreenSlider(container, options) { 
@@ -20,14 +22,18 @@
 		this.index = 0;
 		this.zIndex = 0;
 
-		
 		if (this.opts.tb && this.opts.lr) this.opts.tb = false;
+
+		//默认初始化页面元素zIndex层级
 		this.init_zIndex();
+
+		//默认监听滑动事件
 		this.slide();
+
+		//如果不循环，则执行回弹监听
 		if (!this.opts.loop) { 
 			this.reboundMonitor();
 		}
-		
 	};
 
 	//初始化页面元素zIndex层级
@@ -83,17 +89,34 @@
 
 	//取得下一个滑动元素索引
 	FullScreenSlider.prototype.nextIndex = function(direction) { 
-		if (direction == 'up' || direction == 'left') { 
-			this.index++;
-			if (this.index > this.len - 1) { 
-				this.opts.loop ? this.index = 0 : this.index = this.len - 1;
+
+		if (this.opts.tb) { 
+			if (direction == 'up') { 
+				this.index++;
+				if (this.index > this.len - 1) { 
+					this.opts.loop ? this.index = 0 : this.index = this.len - 1;
+				}
+			}
+			if (direction == 'down') { 
+				this.index--;
+				if (this.index < 0) { 
+					this.opts.loop ? this.index = this.len - 1 : this.index = 0;
+				}
 			}
 		}
-
-		if (direction == 'down' || direction == 'right') { 
-			this.index--;
-			if (this.index < 0) { 
-				this.opts.loop ? this.index = this.len - 1 : this.index = 0;
+		
+		if (this.opts.lr) { 
+			if (direction == 'left') { 
+				this.index++;
+				if (this.index > this.len - 1) { 
+					this.opts.loop ? this.index = 0 : this.index = this.len - 1;
+				}
+			}
+			if (direction == 'right') { 
+				this.index--;
+				if (this.index < 0) { 
+					this.opts.loop ? this.index = this.len - 1 : this.index = 0;
+				}
 			}
 		}
 	};
@@ -102,10 +125,11 @@
 	FullScreenSlider.prototype.slide = function() { 
 		var _this = this;
 		
-		this.$container.swipe({ 
+		this.$pages.swipe({ 
 			swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
 				_this.nextIndex(direction);
 				_this.goTo(_this.index, direction);
+				_this.setProgressDot();
 	        }
 		});
 	};
@@ -113,18 +137,15 @@
 	//注册首尾页弹回事件监听
 	FullScreenSlider.prototype.reboundMonitor = function() { 
 		var _this = this;
-		addEventListener('touchstart', fingerStart, false);
-		addEventListener('touchmove', fingerMove, false);
-		addEventListener('touchend', fingerEnd, false);
-
+		
 		//手指触摸
-		function fingerStart(e) { 
+		var fingerStart = function (e) { 
 			this.startPageX = e.touches[0].pageX;
 			this.startPageY = e.touches[0].pageY;
 		};
 
 		//手指触摸后移动
-		function fingerMove(e) {
+		var fingerMove = function (e) {
 			//阻止android滑动时的默认行为，重要！
 			e.preventDefault(); 
 
@@ -149,18 +170,26 @@
 					});
 				}
 			}
-			
 		};
 
 		//手指抬起
-		function fingerEnd(e) { 
-			if (_this.isFirstElement(e.target) && (this.offsetX > 0 || this.offsetY > 0) || _this.isLastElement(e.target) && (this.offsetX < 0 || this.offsetY < 0)) { 
+		var fingerEnd = function (e) { 
+			//if (_this.isFirstElement(e.target) && (this.offsetX > 0 || this.offsetY > 0) || _this.isLastElement(e.target) && (this.offsetX < 0 || this.offsetY < 0)) { 
 				$(_this.$pages[_this.index]).css({
 					'-webkit-transform': 'translate3d(0, 0, 0)',
 					'transition': 'transform 0.2s ease-out'
 				});
-			}
+			//}
 		};
+
+		addEventListener('touchstart', fingerStart, false);
+		addEventListener('touchmove', fingerMove, false);
+		addEventListener('touchend', fingerEnd, false);
+	};
+
+	FullScreenSlider.prototype.setProgressDot = function() { 
+		var $dots = this.$container.siblings('nav').find('span');
+		$dots.eq(this.index).addClass('active').siblings().removeClass('active');
 	};
 
 	$.fn.fullScreenSlider = function(options) { 
