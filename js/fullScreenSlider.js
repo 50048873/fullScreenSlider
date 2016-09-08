@@ -8,8 +8,8 @@
 	*/
 	var defaults = { 
 		loop: false,
-		tb: true,
-		lr: false
+		tb: false,
+		lr: true
 	};
 
 	function FullScreenSlider(container, options) { 
@@ -130,8 +130,7 @@
 				_this.nextIndex(direction);
 				_this.goTo(_this.index, direction);
 				_this.setProgressDot();
-	        },
-	        threshold: 10
+	        }
 		});
 	};
 
@@ -156,19 +155,19 @@
 
 			if (_this.opts.lr) { 
 				if (_this.isFirstElement(e.target) && this.offsetX > 0 || _this.isLastElement(e.target) && this.offsetX < 0) { 
-					$(_this.$pages[_this.index]).removeClass('slideInLeft slideInRight').css({
+					$(_this.$pages[_this.index]).removeClass('slideInUp slideInDown slideInLeft slideInRight').css({
 						'-webkit-transform': 'translate3d(' + (this.offsetX /= 2) + 'px, 0, 0)',
 						'transition': 'none'
-					}).siblings().css('opacity', '0');
+					});
 				}
 			}
 
 			if (_this.opts.tb) { 
 				if (_this.isFirstElement(e.target) && this.offsetY > 0 || _this.isLastElement(e.target) && this.offsetY < 0) { 
-					$(_this.$pages[_this.index]).removeClass('slideInUp slideInDown').css({
+					$(_this.$pages[_this.index]).removeClass('slideInUp slideInDown slideInLeft slideInRight').css({
 						'-webkit-transform': 'translate3d(0, ' + (this.offsetY /= 2) + 'px, 0)',
 						'transition': 'none'
-					}).siblings().css('opacity', '0');
+					});
 				}
 			}
 		};
@@ -176,15 +175,10 @@
 		//手指抬起
 		var fingerEnd = function (e) { 
 			//if (_this.isFirstElement(e.target) && (this.offsetX > 0 || this.offsetY > 0) || _this.isLastElement(e.target) && (this.offsetX < 0 || this.offsetY < 0)) { 
-				var $activeElement = $(_this.$pages[_this.index]);
-				$activeElement.css({
+				$(_this.$pages[_this.index]).css({
 					'-webkit-transform': 'translate3d(0, 0, 0)',
 					'transition': 'transform 0.2s ease-out'
 				});
-				setTimeout(function() { 
-					$activeElement.siblings().css('opacity', '1');
-				}, 200);
-				
 			//}
 		};
 
