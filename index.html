@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="fullScreenSlider">
+<html class="fullScreenCoverSlider">
 <head>
 	<meta charset="UTF-8" />
 	<title>多页全屏滚动</title>
@@ -9,7 +9,7 @@
 	<meta name='apple-touch-fullscreen' content="yes" />
 	<link rel="apple-touch-icon" href="img/favicon.png">
 	<link rel="icon" type="image/png" href="img/favicon.png">
-	<link rel="stylesheet" type="text/css" href="css/index.css" />
+	<link rel="stylesheet" type="text/css" href="css/fullScreenSlider.css" />
 </head>
 <body>
 	<nav class="horizontalDot">
@@ -38,9 +38,10 @@
 	<script src="js/fullScreenSlider.js"></script>
 	<script>
 		$('.page-container').fullScreenSlider({ 
-			//loop: false,
-			//tb: true,
-			//lr: true
+			loop: false,
+			tb: true,
+			lr: false,
+			clickable: false
 		});
 	</script>
 </body>

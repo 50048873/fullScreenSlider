@@ -2,20 +2,23 @@
 
 ;(function($) { 
 	/*
-		loop: false, 	//默认不循环滚动
-		tb: false,		//上下滑动
-		lr: true		//默认左右滑动
+		loop: false 		//默认不循环滑动
+		tb: false			//上下滑动
+		lr: true			//默认左右滑动
+		clickable: false	//默认不支持pc端的单击事件，为true时支持
 	*/
 	var defaults = { 
 		loop: false,
 		tb: false,
-		lr: true
+		lr: true,
+		clickable: false
 	};
 
 	function FullScreenSlider(container, options) { 
 		this.$container = $(container);
 		this.$pages = this.$container.find('.page');
 		this.$nav = this.$container.siblings('nav');
+		this.$dots = this.$nav.find('span');
 		this.len = this.$pages.length;
 
 		this.opts = $.extend({}, defaults, options);
@@ -30,11 +33,11 @@
 
 		//默认监听滑动事件
 		this.slide();
+		this.scroll();
+		this.opts.clickable && this.dotClickSlide();
 
 		//如果不循环，则执行回弹监听
-		if (!this.opts.loop) { 
-			this.reboundMonitor();
-		}
+		!this.opts.loop && this.reboundMonitor();
 	};
 
 	//初始化页面元素zIndex层级和dot位置
@@ -68,26 +71,44 @@
 			if (this.isFirstElement(event.target) && (direction == 'down' || direction == 'right')) return;
 			if (this.isLastElement(event.target) && (direction == 'up' || direction == 'left')) return;
 		} 
-		
 		//2.根据索引滑动对应页面
 		var startSlide = function(addClass, removeClass) { 
 			_this.$pages.eq(index).css('zIndex', _this.zIndex++).addClass(addClass).siblings().removeClass(removeClass);
 		};
-		if (this.opts.tb) { 
-			if (direction == 'up') { 
-				startSlide('slideInUp', 'slideInUp slideInDown');
+		if (arguments.length === 2) { 
+			if (this.opts.tb) { 
+				if (direction == 'up') { 
+					startSlide('slideInUp', 'slideInUp slideInDown');
+				}
+				if (direction == 'down') { 
+					startSlide('slideInDown', 'slideInUp slideInDown');
+				}
+			} 
+			if (this.opts.lr) { 
+				if (direction == 'left') { 
+					startSlide('slideInRight', 'slideInLeft slideInRight');
+				}
+				if (direction == 'right') { 
+					startSlide('slideInLeft', 'slideInLeft slideInRight');
+				}
 			}
-			if (direction == 'down') { 
-				startSlide('slideInDown', 'slideInUp slideInDown');
+		}
+		if (arguments.length === 1) { 
+			if (this.opts.tb) { 
+				if (index > _this.index) { 
+					startSlide('slideInUp', 'slideInUp slideInDown');
+				} else { 
+					startSlide('slideInDown', 'slideInUp slideInDown');
+				}
+			} 
+			if (this.opts.lr) { 
+				if (index > _this.index) { 
+					startSlide('slideInRight', 'slideInLeft slideInRight');
+				} else { 
+					startSlide('slideInLeft', 'slideInLeft slideInRight');
+				}
 			}
-		} 
-		if (this.opts.lr) { 
-			if (direction == 'left') { 
-				startSlide('slideInRight', 'slideInLeft slideInRight');
-			}
-			if (direction == 'right') { 
-				startSlide('slideInLeft', 'slideInLeft slideInRight');
-			}
+			_this.index = index;
 		}
 	};
 
@@ -194,11 +215,28 @@
 		addEventListener('touchstart', fingerStart, false);
 		addEventListener('touchmove', fingerMove, false);
 		addEventListener('touchend', fingerEnd, false);
+		addEventListener('touchcancel', fingerEnd, false);
 	};
 
 	FullScreenSlider.prototype.setProgressDot = function() { 
-		var $dots = this.$nav.find('span');
-		$dots.eq(this.index).addClass('active').siblings().removeClass('active');
+		this.$dots.eq(this.index).addClass('active').siblings().removeClass('active');
+	};
+
+	//注册pc端滚动事件监听（注：只有在全屏平行滑动模式下才有效）
+	FullScreenSlider.prototype.scroll = function() { 
+		$(window).scroll(function() { 
+			console.log(1);
+		});
+	};
+
+	//注册pc端导航圆点单击事件监听
+	FullScreenSlider.prototype.dotClickSlide = function() { 
+		var _this = this;
+		this.$dots.click(function() { 
+			var index = $(this).index();
+			_this.goTo(index);
+			_this.setProgressDot();
+		});
 	};
 
 	$.fn.fullScreenSlider = function(options) { 
