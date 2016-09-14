@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="fullScreenCoverSlider">
+<html class="fullScreenSlider fullScreenSlider-cover">
 <head>
 	<meta charset="UTF-8" />
 	<title>多页全屏滚动</title>
@@ -18,7 +18,7 @@
 		<span></span>
 		<span></span>
 	</nav>
-	<div class="page-container">
+	<div class="page-container clearfix">
 		<section class="page animated">
 			<h1>第1页</h1>
 		</section>
@@ -33,15 +33,17 @@
 		</section>
 	</div>
 
-	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="js/jquery.min.js"></script>
 	<script src="bower_components/jquery-touchswipe/jquery.touchSwipe.min.js"></script>
 	<script src="js/fullScreenSlider.js"></script>
+	<!--script src="js/fullScreenSlider.PC_surport.js"></script-->
 	<script>
 		$('.page-container').fullScreenSlider({ 
 			loop: false,
-			tb: true,
-			lr: false,
-			clickable: false
+			tb: false,
+			lr: true,
+			clickable: true,
+			cover: false
 		});
 	</script>
 </body>

@@ -1,0 +1,75 @@
+/* 常用公共类 */
+.clearfix:after { 
+	clear: both;
+}
+.clearfix:before,
+.clearfix:after { 
+	content: ' ';
+	display: table;
+}
+.clearfix { 
+	*zoom: 1;
+}
+.clear { 
+	height:0; 
+	overflow:hidden; 
+	clear:both
+}
+.ellipsis { 
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.ellipsis-mobile { 
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+.sj-t(@w:12px, @c: #43c5ef) { 
+	width: 0;
+	height: 0;
+	overflow: hidden;
+	border-width: @w;
+	border-color: transparent transparent @c transparent;
+	border-style: dashed dashed solid dashed;
+}
+.sj-r(@w:12px, @c: red) { 
+	width: 0;
+	height: 0;
+	overflow: hidden;
+	border-width: @w;
+	border-color: transparent transparent transparent @c;
+	border-style: dashed dashed dashed solid;
+}
+.sj-l(@w:12px, @c: red) { 
+	width: 0;
+	height: 0;
+	overflow: hidden;
+	border-width: @w;
+	border-color: transparent @c transparent transparent;
+	border-style: dashed solid dashed dashed;
+}
+.sj-b(@w:12px, @c: #43c5ef) { 
+	width: 0;
+	height: 0;
+	overflow: hidden;
+	border-width: @w;
+	border-color: @c transparent transparent transparent;
+	border-style: solid dashed dashed dashed;
+}
+.linear-gradient(@direction: top, @start: #fff, @end: #f0f0f0, @ie9: #eee) { 
+	background-image: -ms-linear-gradient(@direction, @start, @end);
+	background-image: -moz-linear-gradient(@direction , @start, @end);
+	background-image: -webkit-linear-gradient(@direction, @start, @end);
+	background-image: -o-linear-gradient(@direction , @start, @end);
+	background-image: linear-gradient(@direction, @start, @end);
+	background-color: @ie9;
+}
+.opacity(@a, @b, @c, @val) {
+    @ieVal: @val*100;
+    background: rgb(@a, @b, @c);
+    background: rgba(@a, @b, @c, @val);
+    filter:alpha(opacity=@ieVal);
+}
