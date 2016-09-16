@@ -1,3 +1,5 @@
+/*! fullScreenSlider v1.0.0 | (c) 2016, author: 50048873@qq.com*/
+
 'use strict';
 
 ;(function($) { 
@@ -46,22 +48,33 @@
 		!this.opts.loop && this.reboundMonitor();
 	};
 
+	FullScreenSlider.prototype.updateParams = function() { 
+		this.$container = $('.page-container');
+		this.$pages = this.$container.find('.page');
+		this.len = this.$pages.length;
+	};
+
 	//初始化页面元素
 	FullScreenSlider.prototype.redrawPage = function() { 
+		this.window_w = $(window).width();
+		this.window_h = $(window).height();
 		if (this.opts.cover) { 
 			for (var i = this.len - 1; i >= 0; i--) { 
 				this.$pages.eq(i).css('zIndex', this.zIndex++);
 			}
 		} else { 
 			$('.fullScreenSlider').removeClass('fullScreenSlider-cover').addClass('fullScreenSlider-parallel');
-			var window_w = $(window).width();
-			var window_h = $(window).height();
+			/*if (this.opts.loop) { 
+				this.$pages.clone().appendTo(this.$container);
+				this.updateParams();
+			}*/
+			
 			if (this.opts.lr) { 
-				this.$container.css('width', window_w * this.len);
-				this.$pages.css('width', window_w);
+				this.$container.css('width', this.window_w * this.len);
+				this.$pages.css('width', this.window_w);
 			} else { 
-				this.$container.css('height', window_h * this.len);
-				this.$pages.css('height', window_h);
+				this.$container.css('height', this.window_h * this.len);
+				this.$pages.css('height', this.window_h);
 			}
 		}
 		
@@ -83,19 +96,21 @@
 	};
 
 	//滑动到下一页
-	FullScreenSlider.prototype.goTo = function(index, direction) { 
+	FullScreenSlider.prototype.moveTo = function(index, direction) { 
 		var _this = this;
+		var startSlide;
+
+		//2.如果不能循环时，且满足下面条件，则不滑动
+		if (!this.opts.loop) { 
+			if (this.isFirstElement(event.target) && (direction == 'down' || direction == 'right')) return;
+			if (this.isLastElement(event.target) && (direction == 'up' || direction == 'left')) return;
+		} 
 
 		//1.根据索引滑动对应页面
-		var startSlide = function(addClass, removeClass) { 
-			_this.$pages.eq(index).css('zIndex', _this.zIndex++).addClass(addClass).siblings().removeClass(removeClass);
-		};
-		if (arguments.length === 2) { 
-			//2.如果不能循环时，且满足下面条件，则不滑动
-			if (!this.opts.loop) { 
-				if (this.isFirstElement(event.target) && (direction == 'down' || direction == 'right')) return;
-				if (this.isLastElement(event.target) && (direction == 'up' || direction == 'left')) return;
-			} 
+		if (_this.opts.cover) { 
+			startSlide = function(addClass, removeClass) { 
+				_this.$pages.eq(index).css('zIndex', _this.zIndex++).addClass(addClass).siblings().removeClass(removeClass);
+			};
 			if (this.opts.tb) { 
 				if (direction == 'up') { 
 					startSlide('slideInUp', 'slideInUp slideInDown');
@@ -112,7 +127,23 @@
 					startSlide('slideInLeft', 'slideInLeft slideInRight');
 				}
 			}
+		} else { 
+			startSlide = function() { 
+				if (_this.opts.lr) { 
+					_this.$container.css({ 
+						'-webkit-transform': 'translate3d(-' + _this.window_w * index + 'px, 0, 0)',
+						'transition': '-webkit-transform 0.4s ease-out'
+					});
+				} else { 
+					_this.$container.css({ 
+						'-webkit-transform': 'translate3d(0, -' + _this.window_h * index + 'px, 0)',
+						'transition': '-webkit-transform 0.4s ease-out'
+					});
+				}
+			};
+			startSlide();
 		}
+		
 		if (arguments.length === 1) { 
 			if (this.opts.tb) { 
 				if (index > _this.index) { 
@@ -137,31 +168,26 @@
 		if (this.opts.tb) { 
 			if (direction == 'up') { 
 				this.index++;
-				if (this.index > this.len - 1) { 
-					this.opts.loop ? this.index = 0 : this.index = this.len - 1;
-				}
 			}
 			if (direction == 'down') { 
 				this.index--;
-				if (this.index < 0) { 
-					this.opts.loop ? this.index = this.len - 1 : this.index = 0;
-				}
 			}
 		}
 		
 		if (this.opts.lr) { 
 			if (direction == 'left') { 
 				this.index++;
-				if (this.index > this.len - 1) { 
-					this.opts.loop ? this.index = 0 : this.index = this.len - 1;
-				}
 			}
 			if (direction == 'right') { 
 				this.index--;
-				if (this.index < 0) { 
-					this.opts.loop ? this.index = this.len - 1 : this.index = 0;
-				}
 			}
+		}
+
+		if (this.index > this.len - 1) { 
+			this.opts.loop ? this.index = 0 : this.index = this.len - 1;
+		}
+		if (this.index < 0) { 
+			this.opts.loop ? this.index = this.len - 1 : this.index = 0;
 		}
 	};
 
@@ -172,7 +198,7 @@
 		this.$pages.swipe({ 
 			swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
 				_this.nextIndex(direction);
-				_this.goTo(_this.index, direction);
+				_this.moveTo(_this.index, direction);
 				_this.setProgressDot();
 	        },
 	        threshold: 10
@@ -232,10 +258,10 @@
 		};
 
 		if (window.addEventListener) { 
-			window.addEventListener('touchstart', fingerStart, false);
-			window.addEventListener('touchmove', fingerMove, false);
-			window.addEventListener('touchend', fingerEnd, false);
-			window.addEventListener('touchcancel', fingerEnd, false);
+			addEventListener('touchstart', fingerStart, false);
+			addEventListener('touchmove', fingerMove, false);
+			addEventListener('touchend', fingerEnd, false);
+			addEventListener('touchcancel', fingerEnd, false);
 		}
 	};
 
@@ -264,7 +290,7 @@
 		var _this = this;
 		this.$dots.click(function() { 
 			var index = $(this).index();
-			_this.goTo(index);
+			_this.moveTo(index);
 			_this.setProgressDot();
 		});
 	};

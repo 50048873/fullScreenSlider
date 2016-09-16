@@ -57,7 +57,7 @@
 //全屏覆盖滑动
 .fullScreenSlider-cover { 
 	.page { 
-		float: left;
+		position: absolute;
 	}
 }
 
@@ -77,15 +77,15 @@ h1 {
     transform: translateY(-50%);
 }
 
-.page:nth-child(1) { 
+.page:nth-child(1n) { 
 	background-color: lime;
 }
-.page:nth-child(2) { 
+.page:nth-child(2n) { 
 	background-color: navy;
 }
-.page:nth-child(3) { 
+.page:nth-child(3n) { 
 	background-color: maroon;
 }
-.page:nth-child(4) { 
+.page:nth-child(4n) { 
 	background-color: purple;
 }
