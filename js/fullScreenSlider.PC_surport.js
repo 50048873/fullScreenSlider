@@ -2,19 +2,22 @@
 
 ;(function($) { 
 	var defaults = { 
-		clickable: true
+		clickable: false
 	};
 
-	function FullScreenSliderPC(options) { 
-		FullScreenSlider.call(this);
+	function FullScreenSliderPC(container, options) { 
+		FullScreenSlider.call(this, container, options);
 		this.opts = $.extend({}, defaults, options);
-		console.log(this.opts);
 
+		this.init();
+
+		//pc支持
+		this.isNotSupport();
+		//this.scroll();
 		this.opts.clickable && this.dotClickSlide();
 	};
-	FullScreenSliderPC.prototype = new FullScreenSlider();
-	console.log(FullScreenSliderPC);
 
+	FullScreenSliderPC.prototype = new FullScreenSlider();
 
 	//兼容性判断
 	FullScreenSliderPC.prototype.isNotSupport = function() { 
@@ -25,23 +28,26 @@
 	};
 
 	//注册pc端滚动事件监听（注：只有在全屏平行滑动模式下才有效）
-	FullScreenSliderPC.prototype.scroll = function() { 
+	/*FullScreenSliderPC.prototype.scroll = function() { 
 		$(window).scroll(function() { 
 			console.log(1);
 		});
-	};
+	};*/
 
 	//注册pc端导航圆点单击事件监听
 	FullScreenSliderPC.prototype.dotClickSlide = function() { 
-		console.log(this);
 		var _this = this;
-		this.clickable && this.$dots.click(function() { 
+		this.$dots.click(function() { 
 			var index = $(this).index();
-			_this.goTo(index);
+			_this.moveTo(index);
 			_this.setProgressDot();
 		});
 	};
-
-	new FullScreenSliderPC();
+	
+	$.fn.fullScreenSlider = $.fn.fullScreenSliderPC = function(options) { 
+		return this.each(function(index, val) { 
+			new FullScreenSliderPC(val, options);
+		});
+	};
 
 })(jQuery);

@@ -15,7 +15,7 @@
 		loop: false,
 		tb: false,
 		lr: true,
-		clickable: false,
+		//clickable: false,
 		cover: true
 	};
 
@@ -31,6 +31,10 @@
 		this.index = 0;
 		this.zIndex = 0;
 
+		this.init();
+	};
+
+	FullScreenSlider.prototype.init = function() { 
 		if (this.opts.tb && this.opts.lr) this.opts.lr = false;
 
 		//初始化页面元素
@@ -39,20 +43,15 @@
 		//监听滑动事件
 		this.slide();
 
-		//pc支持
-		this.isNotSupport();
-		this.scroll();
-		this.opts.clickable && this.dotClickSlide();
-
 		//如果不循环，则执行回弹监听
 		!this.opts.loop && this.reboundMonitor();
 	};
 
-	FullScreenSlider.prototype.updateParams = function() { 
+	/*FullScreenSlider.prototype.updateParams = function() { 
 		this.$container = $('.page-container');
 		this.$pages = this.$container.find('.page');
 		this.len = this.$pages.length;
-	};
+	};*/
 
 	//初始化页面元素
 	FullScreenSlider.prototype.redrawPage = function() { 
@@ -68,7 +67,6 @@
 				this.$pages.clone().appendTo(this.$container);
 				this.updateParams();
 			}*/
-			
 			if (this.opts.lr) { 
 				this.$container.css('width', this.window_w * this.len);
 				this.$pages.css('width', this.window_w);
@@ -271,7 +269,7 @@
 	};
 
 	//兼容性判断
-	FullScreenSlider.prototype.isNotSupport = function() { 
+	/*FullScreenSlider.prototype.isNotSupport = function() { 
 		var ie8 = window.navigator.userAgent.indexOf('MSIE 8');
 		if (ie8 > 0) { 
 			alert('您的浏览器不支持，请升级到最新浏览器，或用谷歌或火狐浏览');
@@ -293,11 +291,13 @@
 			_this.moveTo(index);
 			_this.setProgressDot();
 		});
-	};
+	};*/
 
 	$.fn.fullScreenSlider = function(options) { 
 		return this.each(function(index, val) { 
 			new FullScreenSlider(val, options);
 		});
 	};
+
+	window.FullScreenSlider = FullScreenSlider;
 })(jQuery);

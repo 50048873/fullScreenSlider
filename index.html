@@ -36,15 +36,22 @@
 	<script src="js/jquery.min.js"></script>
 	<script src="bower_components/jquery-touchswipe/jquery.touchSwipe.min.js"></script>
 	<script src="js/fullScreenSlider.js"></script>
-	<!--script src="js/fullScreenSlider.PC_surport.js"></script-->
+	<script src="js/fullScreenSlider.PC_surport.js"></script>
 	<script>
 		$('.page-container').fullScreenSlider({ 
-			loop: true,
-			tb: true,
+			loop: false,
+			tb: false,
 			lr: true,
 			clickable: true,
 			cover: false
 		});
+		/*$('.page-container').fullScreenSliderPC({ 
+			loop: true,
+			tb: true,
+			lr: false,
+			clickable: true,
+			cover: false
+		});*/
 	</script>
 </body>
 </html>
