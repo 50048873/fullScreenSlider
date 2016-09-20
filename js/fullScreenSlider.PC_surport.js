@@ -4,8 +4,8 @@
 
 ;(function($) { 
 	var defaults = { 
-		clickable: true,
-		scrollable: true
+		clickable: true,	//默认true：支持（需另外引入支持pc的js）；false：不支持pc端的单击事件
+		scrollable: true	//默认true：可滚动翻页（此功能未完成）
 	};
 
 	//寄生组合式继承方法
@@ -25,7 +25,7 @@
 		//2.这种方法不会调用父类构造函数，只是调用父类原型上共享的方法
 		this.init.call(this, container, options);
 
-		this.initPc(container, options);
+		this.pc_init(container, options);
 	};
 
 	//1.组合式继承
@@ -40,7 +40,7 @@
 	//FullScreenSliderPC.prototype.constructor = FullScreenSliderPC;
 
 	//初始化pc端参数及监听
-	FullScreenSliderPC.prototype.initPc = function(container, options) { 
+	FullScreenSliderPC.prototype.pc_init = function(container, options) { 
 		this.opts = $.extend({}, defaults, options);
 		if (this.opts.tb && this.opts.lr) this.opts.lr = false;
 
@@ -100,7 +100,7 @@
 		var _this = this;
 		this.$dots.click(function(event) { 
 			var index = $(this).index();
-			_this.moveTo(index);
+			_this.pc_moveTo(index);
 			_this.setProgressDot();
 		});
 	};
@@ -142,7 +142,7 @@
 	};
 
 	//滑动到下一页
-	FullScreenSliderPC.prototype.moveTo = function(index) { 
+	FullScreenSliderPC.prototype.pc_moveTo = function(index) { 
 		var _this = this;
 
 		//1.根据索引滑动对应页面

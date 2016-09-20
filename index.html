@@ -33,18 +33,20 @@
 		</section>
 	</div>
 
-	<script src="js/jquery.min.js"></script>
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
 	<script src="bower_components/jquery-touchswipe/jquery.touchSwipe.min.js"></script>
 	<script src="js/fullScreenSlider.js"></script>
+	<!-- 下面二行用于支持pc端的 -->
 	<script src="js/client.js"></script>
 	<script src="js/fullScreenSlider.PC_surport.js"></script>
 	<script>
-		$('.page-container').fullScreenSlider({ 
-			loop: false,
-			tb: false,
-			lr: true,
-			clickable: true,
-			cover: false
+		$(function() { 
+			$('.page-container').fullScreenSlider({ 
+				loop: false,
+				tb: false,
+				lr: true,
+				cover: false
+			});
 		});
 	</script>
 </body>

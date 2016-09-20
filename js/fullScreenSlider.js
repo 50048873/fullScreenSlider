@@ -8,14 +8,12 @@
 		tb: false			//上下滑动
 		lr: true			//默认true：左右滑动
 		cover: true			//默认true：覆盖滑动（覆盖滑动的意思是滑动时下一张动，上一张不动，下一张覆盖上一张）；false：平行滑动（平行滑动的意思是滑动时下一张、上一张同时移动）
-		clickable: false	//默认false：不支持pc端的单击事件；true：支持（需另外引入支持pc的js）
 	*/
 	var defaults = { 
 		loop: false,
 		tb: false,
 		lr: true,
-		cover: true,
-		clickable: false
+		cover: true
 	};
 
 	function FullScreenSlider(container, options) { 
@@ -79,6 +77,8 @@
 		if (this.opts.tb) { 
 			this.$nav.addClass('verticalDot').removeClass('horizontalDot');
 		}
+
+		$('body').css('opacity', '1');
 	};
 
 	//判断是否第一个元素
