@@ -177,7 +177,7 @@
 		
 		this.$pages.swipe({ 
 			swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
-				if (event.type === 'mouseup') return;
+				//if (event.type === 'mouseup') return;
 				_this.nextIndex(direction);
 				_this.moveTo(_this.index, direction, event);
 				_this.setProgressDot();
